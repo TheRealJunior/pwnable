@@ -1,0 +1,9 @@
+the problem is in the auth function
+it performs a memcpy of 12 bytes into a buffer of 8 bytes which allows you to overwrite the ebp of the function above you, so when it performs leave
+the following happens:
+mov esp, ebp
+pop ebp
+ret
+
+
+so ebp+4 needs to have our jump addr
