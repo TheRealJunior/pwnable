@@ -1,0 +1,5 @@
+the user passcode must be provided beforehand
+that means that we must overwrite the saved password
+or predict the random values
+
+the only thing that seems wrong is that he doesn't check the return value of fread & fwrite (if they fail passcode will be 0)
