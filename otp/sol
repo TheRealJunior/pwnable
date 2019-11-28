@@ -1,0 +1,28 @@
+solution ended up being making the fread fail
+credit to @iddoe for helping me figure out how to use ulimit.
+
+ulimit -f 0
+
+and then run the script
+
+#!/usr/bin/env python3
+import subprocess
+import signal
+
+def do_nothing(sig, frame):
+	print('caught')
+
+
+def ignore_signal():
+	try:
+		signal.signal(signal.SIGXFSZ, signal.SIG_IGN)
+	except e as Exception:
+		print(e)
+output = subprocess.check_output(['/home/otp/otp 0'], shell=True, preexec_fn=ignore_signal)
+
+print(output)
+
+
+it seems like this script does not make fwrite fail but fclose, because of buffering maybe?
+anyway, the return value of fwrite/fread/fclose are not checked anyway.
+but a signal is raised when the actual writing of the bytes to file happen and we need to catch that.
