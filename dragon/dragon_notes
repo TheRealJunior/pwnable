@@ -1,0 +1,28 @@
+first thing i've noticed is the players health is 4 bytes
+while the dragon health is 1 byte
+
+I thought about maybe going negative on the players health to achieve some sort of godmode but that won't work cause the instruction jg is being used which is signed comparasion 
+
+That also means that there's a signed check on the dragons health.
+So for the first stage you'll have to be a priest and die once to get a mama dragon. 
+then you just use a shield and clarity as much as you can to get the dragon to 128 health which is 0x80 and negative when signed: 0b10000000
+
+the signed check will then fail and you will beat the mama dragon
+also after performing PriestAttack and defeating the dragon the dragon object gets freed.
+
+and the player name gets allocated to 16 bytes which is just the size of the dragon object.
+
+i guess we'll overwrite it with the address of the system("/bin/sh");
+
+
+for some reason my script doesn't work out of the box...
+maybe i need to allocate more dragons for my allocation to land inside.
+
+so knight
+knight
+knight
+priest
+knight 
+knight
+knight 
+priest
