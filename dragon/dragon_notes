@@ -26,3 +26,11 @@ knight
 knight
 knight 
 priest
+
+just checked and it seems like after knight the dragon is freed as well
+so nevermind
+
+guess i'll have to debug
+
+debugging shows i had an extra 3 3 2
+works without it
