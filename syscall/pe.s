@@ -1,4 +1,4 @@
-@ rm pe.s; vi pe.s; as pe.s -o pe.o; ld pe.o -o pe; ./pe
+@ rm /tmp/pe.s; vi /tmp/pe.s; as /tmp/pe.s -o /tmp/pe.o; ld /tmp/pe.o -o /tmp/pe; /tmp/pe
 .text
 .global _start
 
@@ -26,6 +26,9 @@ _start:
     mov r1, #25
     bl _print
 
+@ try writing to text section of kernel
+    bl _try_write_text
+
 
 _exit:
     mov r7, #1              @ syscall for 'exit'
@@ -41,10 +44,22 @@ _print: @ print(pointer@r0, length@r1)
 
     mov pc, lr @ branch register LR
 
+_try_write_text:
+    mov r7, #223
+    ldr r0, =_text
+    ldr r0, [r0]
+    ldr r1, =_out
+    swi #0
+
+    mov pc, lr
+
 
 .data
 _in:
-    .asciz "hey there in lowercase\n"          @ our string, NULL terminated
+    .string "hey there in lowercase\n"          @ our string, NULL terminated
 
 _out:
     .skip 40 @ just placeholder
+
+_text:
+    .word 0x80008000

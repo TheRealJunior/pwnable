@@ -1,0 +1,21 @@
+rm /tmp/pe.s; vi /tmp/pe.s; as /tmp/pe.s -o /tmp/pe.o; ld /tmp/pe.o -o /tmp/pe; /tmp/pe
+
+
+; sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every 178956ms
+; PERCPU: Embedded 7 pages/cpu @805ea000 s7296 r8192 d13184 u32768
+; Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 27940
+; Kernel command line: 'root=/dev/ram rw console=ttyAMA0 rdinit=/sbin/init'
+; PID hash table entries: 512 (order: -1, 2048 bytes)
+; Dentry cache hash table entries: 16384 (order: 4, 65536 bytes)
+; Inode-cache hash table entries: 8192 (order: 3, 32768 bytes)
+; Memory: 57292K/112640K available (3579K kernel code, 166K rwdata, 1020K rodata, 203K init, 138K bss, 55348K reserved)
+; Virtual kernel memory layout:
+;     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+;     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+;     vmalloc : 0x87000000 - 0xff000000   (1920 MB)
+;     lowmem  : 0x80000000 - 0x86e00000   ( 110 MB)
+;     modules : 0x7f000000 - 0x80000000   (  16 MB)
+;       .text : 0x80008000 - 0x80485f40   (4600 kB)
+;       .init : 0x80486000 - 0x804b8c80   ( 204 kB)
+;       .data : 0x804ba000 - 0x804e3b20   ( 167 kB)
+;        .bss : 0x804e3b20 - 0x805065d0   ( 139 kB)
