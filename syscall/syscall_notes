@@ -1,4 +1,4 @@
-rm /tmp/pe.s; vi /tmp/pe.s; as /tmp/pe.s -o /tmp/pe.o; ld /tmp/pe.o -o /tmp/pe; /tmp/pe
+rm /tmp/pe.s; vi /tmp/pe.s; as /tmp/pe.s -o /tmp/pe.o; ld /tmp/pe.o -o /tmp/pe; /tmp/pe | base64 
 
 
 ; sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every 178956ms
@@ -19,3 +19,14 @@ rm /tmp/pe.s; vi /tmp/pe.s; as /tmp/pe.s -o /tmp/pe.o; ld /tmp/pe.o -o /tmp/pe; 
 ;       .init : 0x80486000 - 0x804b8c80   ( 204 kB)
 ;       .data : 0x804ba000 - 0x804e3b20   ( 167 kB)
 ;        .bss : 0x804e3b20 - 0x805065d0   ( 139 kB)
+
+Googling around and seeing looking for kernel symbols i've found out about /proc/kallsyms
+
+override setuid with:
+     prepare_creds()
+     commit_creds()
+     ??
+
+
+interesting to see if other people have implemented this in pure asm
+i'll check after i solve this
