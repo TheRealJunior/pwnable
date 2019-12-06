@@ -30,3 +30,31 @@ override setuid with:
 
 interesting to see if other people have implemented this in pure asm
 i'll check after i solve this
+
+
+I'm having troubles returning to user spaces, so it seems...
+I've ran this piece of code after prepare_kernel_creds and commit_creds:
+
+    movt r1, #0x4141
+    mov pc, r1
+
+and my crash is:
+pc : [<41410000>]    lr : [<8003f6a0>]    psr: 80000033
+sp : 8301bfa0  ip : 00000000  fp : 00000000
+r10: 00000000  r9 : 8003f56c  r8 : 8000e348
+r7 : 00000017  r6 : 00000041  r5 : 00000000  r4 : 00000000
+r3 : 00002710  r2 : 804cbd40  r1 : 41410001  r0 : 00000000
+Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA Thumb  Segment user
+Control: 10c53c7d  Table: 62aa806a  DAC: 00000015
+Process pe (pid: 549, stack limit = 0x8301a238)
+Stack: (0x8301bfa0 to 0x8301c000)
+bfa0: 00000000 8000e1a0 00000000 00000000 00000000 8002f32f 00000004 00000000
+bfc0: 00000000 00000000 00000041 00000017 000101d6 000101d6 8002f330 00000000
+bfe0: 00000000 7ece8e90 00008098 00008138 60000010 00000000 63e30380 bf00bd38
+[<8003f6a0>] (commit_creds+0x134/0x210) from [<00000000>] (  (null))
+Code: bad PC value
+
+
+which means i'm reaching that piece of code with no problem.
+however i'm also having troubles with putting 0x0 into r0
+to make other binaries be able to use setuid
