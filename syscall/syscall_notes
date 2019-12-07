@@ -32,7 +32,7 @@ interesting to see if other people have implemented this in pure asm
 i'll check after i solve this
 
 
-I'm having troubles returning to user spaces, so it seems...
+I'm having troubles returning to user space, so it seems...
 I've ran this piece of code after prepare_kernel_creds and commit_creds:
 
     movt r1, #0x4141
@@ -58,6 +58,8 @@ Code: bad PC value
 which means i'm reaching that piece of code with no problem.
 however i'm also having troubles with putting 0x0 into r0
 to make other binaries be able to use setuid
+
+to clarify the issue was eventually returning to the interrupt handler.
 
 i saw a file named m.ko
 maybe ko=kernel object?
